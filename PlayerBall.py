@@ -30,7 +30,7 @@ class PlayerBall(Ball):
 	def update(self, width, height):
 		Ball.update(self, width, height)
 		self.animate()
-		self.facingChanged = False
+		self.changed = False
 		
 	def collideWall(self, width, height):
 		if not self.didBounceX:
@@ -50,7 +50,7 @@ class PlayerBall(Ball):
 			self.waitCount += 1
 		else:
 			self.waitCount = 0
-			self.facingChanged = True
+			self.changed = True
 			if self.frame < self.maxFrame:
 				self.frame += 1
 			else:
