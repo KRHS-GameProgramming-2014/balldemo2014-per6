@@ -1,6 +1,8 @@
 import pygame, sys, random
 from Ball import Ball
 from PlayerBall import PlayerBall
+from HUD import Text
+from HUD import Score
 
 pygame.init()
 
@@ -18,6 +20,10 @@ player = PlayerBall([width/2, height/2])
 
 balls = []
 balls += [Ball("images/Ball/ball.png", [4,5], [100, 125])]
+
+timer = Score([80, height - 25], "Time: ", 36)
+timerWait = 0
+timerWaitMax = 6
 
 while True:
 	for event in pygame.event.get():
@@ -47,7 +53,14 @@ while True:
 					  [random.randint(0,10), random.randint(0,10)],
 					  [random.randint(100, width-100), random.randint(100, height-100)])
 					  ]
+					  
+	if timerWait < timerWaitMax:
+		timerWait += 1
+	else:
+		timerWait = 0
+		timer.increaseScore(.1)
 	player.update(width, height)
+	timer.update()
 	for ball in balls:
 		ball.update(width, height)
 		
@@ -65,6 +78,7 @@ while True:
 	for ball in balls:
 		screen.blit(ball.image, ball.rect)
 	screen.blit(player.image, player.rect)
+	screen.blit(timer.image, timer.rect)
 	pygame.display.flip()
 	clock.tick(60)
 		
