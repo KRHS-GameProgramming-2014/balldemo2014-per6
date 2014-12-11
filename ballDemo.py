@@ -16,6 +16,9 @@ bgColor = r,g,b = 0, 0, 0
 
 screen = pygame.display.set_mode(size)
 
+bgImage = pygame.image.load("images/Screens/Main Screen.png").convert()
+bgRect = bgImage.get_rect()
+
 player = PlayerBall([width/2, height/2])
 
 balls = []
@@ -24,6 +27,8 @@ balls += [Ball("images/Ball/ball.png", [4,5], [100, 125])]
 timer = Score([80, height - 25], "Time: ", 36)
 timerWait = 0
 timerWaitMax = 6
+
+score = Score([width-80, height-25], "Score: ", 36)
 
 while True:
 	for event in pygame.event.get():
@@ -48,7 +53,7 @@ while True:
 				player.go("stop left")
 		
 	if len(balls) < 10:
-		if random.randint(0, .25*60) == 0:
+		if random.randint(0, 1*60) == 0:
 			balls += [Ball("images/Ball/ball.png",
 					  [random.randint(0,10), random.randint(0,10)],
 					  [random.randint(100, width-100), random.randint(100, height-100)])
@@ -61,13 +66,15 @@ while True:
 		timer.increaseScore(.1)
 	player.update(width, height)
 	timer.update()
+	score.update()
 	for ball in balls:
 		ball.update(width, height)
 		
 	for bully in balls:
 		for victem in balls:
 			bully.collideBall(victem)
-			bully.collidePlayer(player)
+		if bully.collidePlayer(player):
+			score.increaseScore(1)
 	
 	for ball in balls:
 		if not ball.living:
@@ -75,10 +82,12 @@ while True:
 	
 	bgColor = r,g,b
 	screen.fill(bgColor)
+	screen.blit(bgImage, bgRect)
 	for ball in balls:
 		screen.blit(ball.image, ball.rect)
 	screen.blit(player.image, player.rect)
 	screen.blit(timer.image, timer.rect)
+	screen.blit(score.image, score.rect)
 	pygame.display.flip()
 	clock.tick(60)
 		

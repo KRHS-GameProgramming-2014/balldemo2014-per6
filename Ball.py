@@ -50,7 +50,7 @@ class Ball():
 						if not self.didBounceY:
 							self.speedy = -self.speedy
 							self.didBounceY = True
-							#print "hit Ball"
+							
 							
 	def collidePlayer(self, other):
 		if self != other:
@@ -58,6 +58,8 @@ class Ball():
 				if self.rect.bottom > other.rect.top and self.rect.top < other.rect.bottom:
 					if (self.radius + other.radius) > self.distance(other.rect.center):
 						self.living = False
+						return True
+		return False
 	
 	def distance(self, pt):
 		x1 = self.rect.center[0]
