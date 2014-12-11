@@ -3,6 +3,7 @@ from Ball import Ball
 from PlayerBall import PlayerBall
 from HUD import Text
 from HUD import Score
+from Button import Button
 
 pygame.init()
 
@@ -32,6 +33,10 @@ score = Score([width-80, height-25], "Score: ", 36)
 
 run = False
 
+startButton = Button([width/2, height-300], 
+				     "images/Buttons/Start Base.png", 
+				     "images/Buttons/Start Clicked.png")
+
 while True:
 	while not run:
 		for event in pygame.event.get():
@@ -39,10 +44,16 @@ while True:
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_RETURN:
 					run = True
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				startButton.click(event.pos)
+			if event.type == pygame.MOUSEBUTTONUP:
+				if startButton.release(event.pos):
+					run = True
 					
 		bgColor = r,g,b
 		screen.fill(bgColor)
 		screen.blit(bgImage, bgRect)
+		screen.blit(startButton.image, startButton.rect)
 		pygame.display.flip()
 		clock.tick(60)
 		
