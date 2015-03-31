@@ -1,7 +1,8 @@
 import pygame, math
 
-class Ball():
+class Ball(pygame.sprite.Sprite):
 	def __init__(self, image, speed = [0,0], pos = [0,0]):
+		pygame.sprite.Sprite.__init__(self, self.containers)
 		self.image = pygame.image.load(image)
 		self.rect = self.image.get_rect()
 		self.speedx = speed[0]
@@ -16,7 +17,10 @@ class Ball():
 	def place(self, pos):
 		self.rect.center = pos
 		
-	def update(self, width, height):
+	def update(*args):
+		self = args[0]
+		width = args[1]
+		height = args[2]
 		self.didBounceX = False
 		self.didBounceY = False
 		self.speed = [self.speedx, self.speedy]
@@ -41,15 +45,13 @@ class Ball():
 		
 	def collideBall(self, other):
 		if self != other:
-			if self.rect.right > other.rect.left and self.rect.left < other.rect.right:
-				if self.rect.bottom > other.rect.top and self.rect.top < other.rect.bottom:
-					if (self.radius + other.radius) > self.distance(other.rect.center):
-						if not self.didBounceX:
-							self.speedx = -self.speedx
-							self.didBouncex = True
-						if not self.didBounceY:
-							self.speedy = -self.speedy
-							self.didBounceY = True
+			if (self.radius + other.radius) > self.distance(other.rect.center):
+				if not self.didBounceX:
+					self.speedx = -self.speedx
+					self.didBouncex = True
+				if not self.didBounceY:
+					self.speedy = -self.speedy
+					self.didBounceY = True
 							
 							
 	def collidePlayer(self, other):

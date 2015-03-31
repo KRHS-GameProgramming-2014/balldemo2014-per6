@@ -4,6 +4,9 @@ from PlayerBall import PlayerBall
 from HUD import Text
 from HUD import Score
 from Button import Button
+from BackGround import BackGround
+from Level import Level
+from Block import Block
 
 pygame.init()
 
@@ -13,6 +16,7 @@ width = 800
 height = 600
 size = width, height
 
+
 bgColor = r,g,b = 0, 0, 10
 
 screen = pygame.display.set_mode(size)
@@ -20,16 +24,20 @@ screen = pygame.display.set_mode(size)
 bgImage = pygame.image.load("images/Screens/Start Screen.png").convert()
 bgRect = bgImage.get_rect()
 
-player = PlayerBall([width/2, height/2])
+balls = pygame.sprite.Group()
+players = pygame.sprite.Group()
+hudItems = pygame.sprite.Group()
+backgrounds = pygame.sprite.Group()
+blocks = pygame.sprite.Group()
+all = pygame.sprite.OrderedUpdates()
 
-balls = []
-balls += [Ball("images/Ball/ball.png", [4,5], [100, 125])]
+Ball.containers = (all, balls)
+PlayerBall.containers = (all, players)
+BackGround.containers = (all, backgrounds)
+Block.containers = (all, blocks)
+Score.containers = (all, hudItems)
 
-timer = Score([80, height - 25], "Time: ", 36)
-timerWait = 0
-timerWaitMax = 6
 
-score = Score([width-80, height-25], "Score: ", 36)
 
 run = False
 
@@ -57,8 +65,19 @@ while True:
 		pygame.display.flip()
 		clock.tick(60)
 		
-	bgImage = pygame.image.load("images/Screens/Main Screen.png").convert()
-	bgRect = bgImage.get_rect()
+	BackGround("images/Screens/Main Screen.png")
+	
+	player = PlayerBall([width/2, height/2])
+	
+	
+	level = Level(size, 50)
+	level.loadLevel("1")
+
+	timer = Score([80, height - 25], "Time: ", 36)
+	timerWait = 0
+	timerWaitMax = 6
+
+	score = Score([width-80, height-25], "Score: ", 36)
 	while run:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT: sys.exit()
@@ -83,40 +102,32 @@ while True:
 			
 		if len(balls) < 10:
 			if random.randint(0, 1*60) == 0:
-				balls += [Ball("images/Ball/ball.png",
+				Ball("images/Ball/ball.png",
 						  [random.randint(0,10), random.randint(0,10)],
 						  [random.randint(100, width-100), random.randint(100, height-100)])
-						  ]
+						  
 						  
 		if timerWait < timerWaitMax:
 			timerWait += 1
 		else:
 			timerWait = 0
 			timer.increaseScore(.1)
-		player.update(width, height)
-		timer.update()
-		score.update()
-		for ball in balls:
-			ball.update(width, height)
-			
-		for bully in balls:
-			for victem in balls:
-				bully.collideBall(victem)
-			if bully.collidePlayer(player):
+		
+		playersHitBalls = pygame.sprite.groupcollide(players, balls, False, True)
+		ballsHitBalls = pygame.sprite.groupcollide(balls, balls, False, False)
+		
+		for player in playersHitBalls:
+			for ball in playersHitBalls[player]:
 				score.increaseScore(1)
+				
+		for bully in ballsHitBalls:
+			for victem in ballsHitBalls[bully]:
+				bully.collideBall(victem)
 		
-		for ball in balls:
-			if not ball.living:
-				balls.remove(ball)
+		all.update(width, height)
 		
-		bgColor = r,g,b
-		screen.fill(bgColor)
-		screen.blit(bgImage, bgRect)
-		for ball in balls:
-			screen.blit(ball.image, ball.rect)
-		screen.blit(player.image, player.rect)
-		screen.blit(timer.image, timer.rect)
-		screen.blit(score.image, score.rect)
+		dirty = all.draw(screen)
+		pygame.display.update(dirty)
 		pygame.display.flip()
 		clock.tick(60)
 		

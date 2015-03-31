@@ -1,7 +1,8 @@
 import pygame
 
-class Text():
+class Text(pygame.sprite.Sprite):
 	def __init__(self, pos, text = "", textSize = 12, textColor=(255,255,255), font = None):
+		pygame.sprite.Sprite.__init__(self, self.containers)
 		self.text = text
 		self.textColor = textColor
 		self.font = pygame.font.Font(font, textSize)
@@ -17,7 +18,7 @@ class Text():
 		self.image = self.font.render(text, 1, textColor)
 		self.rect = self.image.get_rect(center = self.rect.center)
 		
-	def update(self, width, height):
+	def update(*args):
 		pass
 
 class Score(Text):
@@ -32,7 +33,8 @@ class Score(Text):
 		self.baseText = text
 		self.change = True
 		
-	def update(self):
+	def update(*args):
+		self = args[0]
 		if self.change:
 			self.text = self.baseText + str(self.score)
 			self.image = self.font.render(self.text, 1, self.textColor)

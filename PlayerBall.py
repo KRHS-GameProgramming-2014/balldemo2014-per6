@@ -27,7 +27,10 @@ class PlayerBall(Ball):
 		self.rect = self.image.get_rect(center = self.rect.center)
 		self.maxSpeed = 10
 			
-	def update(self, width, height):
+	def update(*args):
+		self = args[0]
+		width = args[1]
+		height = args[2]
 		Ball.update(self, width, height)
 		self.animate()
 		self.changed = False
